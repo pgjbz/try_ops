@@ -6,7 +6,7 @@ authors = ["Paulo Gabriel Justino Bezerra <contact@pgjbz.dev>"]
 description = "try catc... ops macro"
 license = "MIT"
 readme = "README.md"
-keywords = ["try", "catch", "exception", "try-catch", "catch-try", "rust-try-catch", "macro"]
+keywords = ["try", "catch", "exception", "try-catch", "macro"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
