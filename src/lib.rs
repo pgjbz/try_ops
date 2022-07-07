@@ -7,6 +7,7 @@
 macro_rules! catch {
     ($ret_type:ty => try $block:block $(ops $name:ident: $ty: ty $ops_block:block)+) => {
         {
+            #[inline(always)]
             fn handled() -> Result<$ret_type, Box<dyn std::error::Error>> $block
             match handled() {
                 Ok(val) => val,
@@ -18,6 +19,7 @@ macro_rules! catch {
             }
         }
     };
+    (try $block:block $(ops $name:ident: $ty: ty $ops_block:block)+) => {crate::catch!(() => try $block $(ops $name: $ty $ops_block )+ ) }
 }
 
 #[cfg(test)]
@@ -50,8 +52,35 @@ mod test {
     }
 
     #[test]
+    fn ops_correct_type_without_inform_return() {
+        catch!(try {
+            aux(true)?;
+            assert!(false);
+            Ok(())
+        } ops e: io::Error {
+            assert_eq!(e.kind(), io::ErrorKind::Other);
+        } ops _e: ErrorTests {
+        });
+    }
+
+
+
+    #[test]
     fn success() {
         let result = catch!(() => try {
+            aux(false)?;
+            Ok(())
+        } ops e: io::Error {
+            assert_eq!(e.kind(), io::ErrorKind::Other);
+        } ops _e: ErrorTests {
+            assert!(false);
+        });
+        assert_eq!((), result)
+    }
+
+    #[test]
+    fn success_without_inform_return() {
+        let result = catch!(try {
             aux(false)?;
             Ok(())
         } ops e: io::Error {
